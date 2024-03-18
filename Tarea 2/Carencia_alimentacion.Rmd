@@ -1,0 +1,103 @@
+---
+title: "Tarea2"
+author: "Andrés Limón Cruz"
+date: "2024-03-02"
+output: pdf_document
+---
+
+Primero procedemos a cargar nuestra base de datos ya preparada en formato csv
+
+```{r}
+library(tidyverse)
+Carencia_alimentacion_2020 <- read_csv("Carencia_alimentacion_2020.csv")
+```
+
+Veamos que nuestros datos han sido importados correctamente
+
+```{r}
+Carencia_alimentacion_2020
+```
+
+Primero términos de limpiar nuestros datos quitando todos los valores que tengan un n.d o parecido
+
+```{r}
+Carencia_alimentacion_2020 <- na.omit(Carencia_alimentacion_2020)
+```
+
+
+Respondamos entonces las preguntas
+Total de individuos que están contenidos en municipios cuya población tiene de 0% a 15% de carencia por acceso a la alimentación
+
+```{r}
+Carencia_0_15 <- Carencia_alimentacion_2020 %>% filter(Porcentaje_poblacion_carencia > 0, Porcentaje_poblacion_carencia <15)
+
+Carencia_0_15
+```
+
+Así el total de personas en este rango con esta carencia es de:
+
+```{r}
+sum(Carencia_0_15$Personas_carencia_alimentacion)
+```
+
+Clasificación del total de municipios en el mismo rango con la misma carencia es:
+
+```{r}
+nrow(Carencia_0_15)
+```
+
+Entonces tenemos 635 municipios con 0 a 15 por ciento de carencia en acceso a alimentos
+
+Total de individuos que están contenidos en municipios cuya población tiene de 15% a 40% de carencia por acceso a la alimentación
+
+```{r}
+Carencia_15_40 <- Carencia_alimentacion_2020 %>% filter(Porcentaje_poblacion_carencia > 15, Porcentaje_poblacion_carencia <40)
+
+Carencia_15_40
+```
+
+Así el total de personas en este rango con esta carencia es de:
+
+```{r}
+sum(Carencia_15_40$Personas_carencia_alimentacion)
+```
+
+Clasificación del total de municipios en el mismo rango con la misma carencia es:
+
+```{r}
+nrow(Carencia_15_40)
+```
+
+Entonces tenemos 1595 municipios con 0 a 15 por ciento de carencia en acceso a alimentos
+
+Total de individuos que están contenidos en municipios cuya población tiene mas de 40% de carencia por acceso a la alimentación
+
+```{r}
+Carencia_40 <- Carencia_alimentacion_2020 %>% filter(Porcentaje_poblacion_carencia > 40)
+
+Carencia_40
+```
+
+Así el total de personas en este rango con esta carencia es de:
+
+```{r}
+sum(Carencia_40$Personas_carencia_alimentacion)
+```
+
+Clasificación del total de municipios en el mismo rango con la misma carencia es:
+
+```{r}
+nrow(Carencia_40)
+```
+
+Entonces tenemos 222 municipios con 0 a 15 por ciento de carencia en acceso a alimentos
+
+Por ultimo considerando que solo tenemos dinero para los municipio de dos estados podemos ordenar de tal manera que podamos ver cuantos municipios tienen un severo problema de acceso a la alimentación
+
+```{r}
+Carencia_40 %>% count(Entidad_federativa) %>% arrange(desc(n))
+```
+
+Así los estados a ayudar son Oaxaca y Puebla
+
+
