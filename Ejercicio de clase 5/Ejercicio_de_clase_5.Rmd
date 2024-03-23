@@ -4,34 +4,71 @@ author: "Andrés Limón Cruz"
 date: "2024-03-23"
 output: pdf_document
 ---
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+```
+
 
 a) Hacer dos scatterplots. Uno con los datos sin transformar, y otro con alguna transformación a los datos (usen transformaciones tipo Box-Cox o Box-Tidwell)
 
 ```{r}
+datos <- read_csv("initech.csv")
+ggplot() + geom_point(mapping = aes(x = datos$years, y = datos$salary)) + 
+  xlab("Años") + ylab("Salario")
+```
+Apliquemos ahora una transformación a los datos, en este caso he escogido usar box-cox:
 
+```{r}
+fit <- glm(salary ~ years, data = datos)
+car::powerTransform(fit)
+```
+
+Entonces tenemos que el mas cercano es 0, entonces usamos log()
+
+```{r}
+ggplot() + geom_point(mapping = aes(x = datos$years, y = log(datos$salary))) + 
+  xlab("Años") + ylab("Salario")
 ```
 
 b) Ajustar una regresión según la transformación que hayan elegido (o sea creen un objeto de R de tipo lm usando la respectiva función lm() que hayan usado)
 
 ```{r}
-
+fit <- lm(log(salary) ~ years, data = datos)
+b0 <- coef(fit)[1]
+b1 <- coef(fit)[2]
+print(b0)
+print(b1)
 ```
 
 c) De ser posible, interpreten los parámetros $\beta_0$ y $\beta_1$ de su ajuste.
 
 ```{r}
-
+summary(fit)
 ```
+Entonces veamos que 
+$$
+\mathbb{E}(y | x = 0) = \exp(b_0)
+$$ 
+y para $b_1$ tenemos que 
+$$
+\mathbb{E}(y|x+1) = \exp(b_0 + b_1(x+1)) = \exp(b_0+b_1x+b_1) = \exp(b_0+b_1x) \cdot \exp(b_1)
+$$
+Es decir cuando $x=0$ tenemos que $\exp(b_0) = \mathbb{E}(y)$ y cada que incrementamos una unidad a $x$ se multiplica el valor por la constante $\exp(b_1)$
 
 d) Hagan un scatterplot con los datos transformados y su respectiva recta ajustada al modelo
 
 ```{r}
-
+ggplot() + geom_point(mapping = aes(x = datos$years, y = log(datos$salary))) + 
+  xlab("Años") + ylab("Salario") +
+  geom_abline(intercept = b0, slope = b1)
 ```
 
 e) Hagan un scatterplot con los datos sin transformar y su respectiva curva ajustada al modelo
 
 ```{r}
-
+curva_ajustada <- function(x) {exp(b0 + b1*x)}
+ggplot() + geom_point(mapping = aes(x = datos$years, y = datos$salary)) + 
+  xlab("Años") + ylab("Salario") +
+  geom_function(fun = curva_ajustada)
 ```
 
