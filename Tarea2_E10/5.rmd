@@ -78,11 +78,22 @@ $$
 H_0: b_2 + b_3 = 0 \quad vs \quad H_1: b_2 + b_3 \neq 0
 $$
 
+```{r}
+K=matrix(c(0,0,1,1), ncol=4, nrow=1, byrow=TRUE)
+m=c(0)
+summary(glht(fit, linfct=K, rhs=m),test=Ftest())
+```
+
 V. Comente sobre el ajuste del modelo incluyendo la interpretación de cada uno de los coeficientes.
 
 ```{r}
-
+summary(fit)
 ```
+Entonces regresando a nuestro modelo podemos ver que con una significancia de 0.05 podemos rechazar la hipótesis nula de que todas las betas son iguales a 0, además también podemos ver que con la misma significancia no podemos reducir nuestro modelo quitando alguna de las variables, pues no tenemos información suficiente para decir que dado que las demás variables están en el modelo podemos retirar alguna, por ultimo podemos ver que el modelo explica alrededor del 67% de nuestros datos. Pasemos a la interpretación de cada uno de los coeficientes:
+- $b_0$: Es el intercepto de nuestro modelo, es decir el valor esperado de la generación de anticuerpos cuando la edad es 0 y no se aplica el medicamento, en este caso es de 29.3.
+- $b_1$: Es el coeficiente asociado a la edad, es decir por cada año que aumenta la edad disminuye en 0.3 la generación de anticuerpos.
+- $b_2$: Es el coeficiente asociado a la administración del medicamento, es decir por aplicar el medicamento disminuye en 2.3 la generación de anticuerpos.
+- $b_3$: Es el coeficiente asociado a la interacción entre la edad y la administración del medicamento, es decir por cada año que aumenta la edad y se aplica el medicamento disminuye en 0.1 la generación de anticuerpos.
 
 
 VI. Argumente en contra o a favor de la afirmación: "El medicamento funciona aumentando el número de anticuerpos para todos los pacientes entre 25 y 60 años". Se puede apoyar de pruebas de hipótesis o intervalos de confianza simultáneos.
