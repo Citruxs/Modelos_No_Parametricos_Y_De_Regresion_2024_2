@@ -13,6 +13,7 @@ Suponga que una empresa farmacéutica está ofreciendo al gobierno un nuevo medi
 
 ```{r Paqueterias, include=FALSE}
 library(tidyverse)
+library(multcomp)
 ```
 
 I. Realice un análisis descriptivo de los datos considerando tanto la información de la edad como de la administración o no del medicamento. Entonces primero realizaremos un box-plot para comparar la población que fue medicada y la población control.
@@ -47,7 +48,10 @@ ggplot() + geom_histogram(data = data, aes(x = Edad, fill = Trat), bins = 30) + 
 De este histograma podemos notar que la edad en ambos grupos es muy similar, donde la edad en ambos grupos se concentra en el rango de 30 a 50 años, y la distribución de la edad en ambos grupos es muy similar, lo cual nos da una buena señal de que la edad no afectará en la evaluación del medicamento.
 
 II. Ajuste un modelo adecuado para evaluar la efectividad del medicamento ajustando por la edad de los pacientes. Es decir, un modelo que incluya como explicativas las variables edad, la binaria asociada a la administración del medicamento y la interacción obtenida como el producto de estas dos.\\
-Entonces queremos un modelo de la forma $\mathbb{E}(Ant; Edad,Trat) = b_0 + b_1 Edad + b_2 Trat + b_3Edad \cdot Trat $
+Entonces queremos un modelo de la forma 
+$$
+\mathbb{E}(Ant; Edad,Trat) = b_0 + b_1 Edad + b_2 Trat + b_3Edad \cdot Trat 
+$$
 
 ```{r}
 fit <- lm(Ant ~ Edad + Trat + Edad*Trat, data = data)
@@ -57,17 +61,22 @@ summary(fit)
 
 III. De acuerdo con el modelo ajustado, indique las expresiones asociadas a la relación de la generación promedio de anticuerpos con la edad en a) el grupo control y b) en el grupo que recibe el medicamento.
 
-```{r}
-
-```
-
+Entonces veamos la expresión para el grupo control:
+$$
+\mathbb{E}(Ant; Edad,Trat = 0) = b_0 + b_1 Edad + b_2 \cdot 0 + b_3Edad \cdot 0 = b_0 + b_1 Edad = 29.3 - 0.3 Edad
+$$
+Por otro lado para el grupo que recibe el medicamento tenemos que:
+$$
+\mathbb{E}(Ant; Edad,Trat = 1) = b_0 + b_1 Edad + b_2 \cdot 1 + b_3Edad \cdot 1 = 29.3 - 0.3 Edad - 2.3 + 0.2 \cdot Edad = 27 - 0.1 Edad
+$$
 
 IV. ¿Se puede decir que la edad afecta de la misma forma la generación de anticuerpos en el grupo control que en el grupo que recibe el medicamento? Realice una prueba de hipótesis apropiada e interprete.
 
-```{r}
+Entonces para realizar esta prueba de hipótesis, podemos comparar las medias obtenidas anteriormente, para comparar si existe un cambio en la generación de anticuerpos con respecto a la edad, así nuestra prueba de hipótesis queda como:
 
-```
-
+$$
+H_0: b_2 + b_3 = 0 \quad vs \quad H_1: b_2 + b_3 \neq 0
+$$
 
 V. Comente sobre el ajuste del modelo incluyendo la interpretación de cada uno de los coeficientes.
 
@@ -76,16 +85,9 @@ V. Comente sobre el ajuste del modelo incluyendo la interpretación de cada uno 
 ```
 
 
-VI. Comente sobre el ajuste del modelo incluyendo la interpretación de cada uno de los coeficientes.
+VI. Argumente en contra o a favor de la afirmación: "El medicamento funciona aumentando el número de anticuerpos para todos los pacientes entre 25 y 60 años". Se puede apoyar de pruebas de hipótesis o intervalos de confianza simultáneos.
 
 ```{r}
 
-```
-
-
-```{r}
-plano <- function(Edad, Trat){
-  coef(fit)[1] + coef(fit)[2]*Edad + coef(fit)[3]*Trat + coef(fit)[4]*Edad*Trat 
-}
 ```
 
