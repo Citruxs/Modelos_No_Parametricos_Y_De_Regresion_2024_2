@@ -1,0 +1,91 @@
+---
+title: '5.'
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+rm(list = ls(all.names = TRUE))
+gc()
+```
+
+Suponga que una empresa farmacéutica está ofreciendo al gobierno un nuevo medicamento para tratar a pacientes con la enfermedad Covid-19. El costo del medicamento es considerable y para tomar una buena decisión se han acercado a usted para analizar los datos que ha compartido la empresa farmacéutica. El archivo Ex5.csv contiene la información: $Ant$ es el numero total de anticuerpos, $Trat$ es una variable con dos niveles dependiendo si se aplicó o no el medicamento. Se sabe que tener mayores anticuerpos evita que se desarrolle una versión grave de la enfermedad y la empresa afirma que eso se logra al aplicar el medicamento, pues los pacientes que recibieron el medicamento tienen más anticuerpos que los que solo recibieron placebo. También se sabe que la generación de anticuerpos es diferente dependiendo de la edad de los individuos y se sospecha que eso también podría afectar la efectividad del medicamento, así que al diseñar el experimento se seleccionaron al azar 100 personas de 200 que presentaban síntomas leves al iniciar el cuadro de la enfermedad a los que se les administro el medicamento, al resto se les dio solo seguimiento. En todos los pacientes se capturo la edad y se procuro tener pacientes en el rango entre 16 y 60 años en ambos grupos. No se sospecha de otro aspecto que pudiera modificar la evaluación del medicamento. (Para este ejercicio no se requiere verificar supuestos del modelo, asuma que se cumplen)
+
+```{r Paqueterias, include=FALSE}
+library(tidyverse)
+```
+
+I. Realice un análisis descriptivo de los datos considerando tanto la información de la edad como de la administración o no del medicamento. Entonces primero realizaremos un box-plot para comparar la población que fue medicada y la población control.
+
+```{r}
+data <- read_csv("Ex5.csv")
+data$Trat <- factor(data$Trat)
+ggplot() + geom_boxplot(data = data, aes(x = Trat, y = Ant)) + labs(title = "Boxplot de la generación de anticuerpos por grupo", x = "Grupo", y = "Generación de anticuerpos")
+
+```
+
+De este box-plot podemos rescatar varias cosas importantes, en primer lugar notemos como tanto el mínimo y el máximo de anticuerpos en el grupo medicado es menor que en el grupo control, lo que nos podría indicar que el tratamiento está funcionando y consolida mas este rango intercuartil, y que el paciente con menores anticuerpos en el grupo medicado, posee mas anticuerpos que el 25% de los pacientes del grupo control, además ambas medianas difieren bastante y presentarían una pendiente positiva, y en general el 50% de los medicados poseen una mayor generación de anticuerpos a comparación del 75% de los pacientes del grupo control. Veamos ahora un histograma.
+
+```{r}
+ggplot() + geom_histogram(data = data, aes(x = Ant, fill = Trat), bins = 30) + labs(title = "Histograma de la generación de anticuerpos por grupo", x = "Generación de anticuerpos", y = "Frecuencia")
+
+```
+
+De aquí podemos notar fácilmente la diferencia de la generación de anticuerpos entre ambos grupos, donde notamos que el grupo de medicados tiene una media mayor con respecto a la media del grupo control, además de que la distribución de los anticuerpos en el grupo medicado es mas dispersa que en el grupo control. Lo cual nos da fuertes sospechas positivas sobre la efectividad del medicamento. Ahora veamos un box-plot de la edad.
+
+```{r}
+ggplot() + geom_boxplot(data = data, aes(x = Trat, y = Edad)) + labs(title = "Boxplot de la edad por grupo", x = "Grupo", y = "Edad")
+
+```
+
+De este box-plot podemos notar que la edad en ambos grupos es muy similar, donde la mediana de ambos grupos es de 38 años, y la dispersión de la edad en ambos grupos es muy similar, lo cual nos da una buena señal de que la edad no afectará en la evaluación del medicamento. Ahora veamos un histograma de la edad.
+
+```{r}
+ggplot() + geom_histogram(data = data, aes(x = Edad, fill = Trat), bins = 30) + labs(title = "Histograma de la edad por grupo", x = "Edad", y = "Frecuencia")
+```
+
+De este histograma podemos notar que la edad en ambos grupos es muy similar, donde la edad en ambos grupos se concentra en el rango de 30 a 50 años, y la distribución de la edad en ambos grupos es muy similar, lo cual nos da una buena señal de que la edad no afectará en la evaluación del medicamento.
+
+II. Ajuste un modelo adecuado para evaluar la efectividad del medicamento ajustando por la edad de los pacientes. Es decir, un modelo que incluya como explicativas las variables edad, la binaria asociada a la administración del medicamento y la interacción obtenida como el producto de estas dos.\\
+Entonces queremos un modelo de la forma $\mathbb{E}(Ant; Edad,Trat) = b_0 + b_1 Edad + b_2 Trat + b_3Edad \cdot Trat $
+
+```{r}
+fit <- lm(Ant ~ Edad + Trat + Edad*Trat, data = data)
+summary(fit)
+```
+
+
+III. De acuerdo con el modelo ajustado, indique las expresiones asociadas a la relación de la generación promedio de anticuerpos con la edad en a) el grupo control y b) en el grupo que recibe el medicamento.
+
+```{r}
+
+```
+
+
+IV. ¿Se puede decir que la edad afecta de la misma forma la generación de anticuerpos en el grupo control que en el grupo que recibe el medicamento? Realice una prueba de hipótesis apropiada e interprete.
+
+```{r}
+
+```
+
+
+V. Comente sobre el ajuste del modelo incluyendo la interpretación de cada uno de los coeficientes.
+
+```{r}
+
+```
+
+
+VI. Comente sobre el ajuste del modelo incluyendo la interpretación de cada uno de los coeficientes.
+
+```{r}
+
+```
+
+
+```{r}
+plano <- function(Edad, Trat){
+  coef(fit)[1] + coef(fit)[2]*Edad + coef(fit)[3]*Trat + coef(fit)[4]*Edad*Trat 
+}
+```
+
