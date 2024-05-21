@@ -21,28 +21,36 @@ I. Realice un análisis descriptivo de los datos considerando tanto la informaci
 ```{r}
 data <- read_csv("Ex5.csv")
 data$Trat <- factor(data$Trat)
-ggplot() + geom_boxplot(data = data, aes(x = Trat, y = Ant)) + labs(title = "Boxplot de la generación de anticuerpos por grupo", x = "Grupo", y = "Generación de anticuerpos")
+ggplot() + geom_boxplot(data = data, aes(x = Trat, y = Ant)) + 
+           labs(title = "Boxplot de la generación de anticuerpos por grupo", 
+                x = "Grupo", y = "Generación de anticuerpos")
 
 ```
 
 De este box-plot podemos rescatar varias cosas importantes, en primer lugar notemos como tanto el mínimo y el máximo de anticuerpos en el grupo medicado es menor que en el grupo control, lo que nos podría indicar que el tratamiento está funcionando y consolida mas este rango intercuartil, y que el paciente con menores anticuerpos en el grupo medicado, posee mas anticuerpos que el 25% de los pacientes del grupo control, además ambas medianas difieren bastante y presentarían una pendiente positiva, y en general el 50% de los medicados poseen una mayor generación de anticuerpos a comparación del 75% de los pacientes del grupo control. Veamos ahora un histograma.
 
 ```{r}
-ggplot() + geom_histogram(data = data, aes(x = Ant, fill = Trat), bins = 30) + labs(title = "Histograma de la generación de anticuerpos por grupo", x = "Generación de anticuerpos", y = "Frecuencia")
+ggplot() + geom_histogram(data = data, aes(x = Ant, fill = Trat), bins = 30) + 
+           labs(title = "Histograma de la generación de anticuerpos por grupo", 
+                x = "Generación de anticuerpos", y = "Frecuencia")
 
 ```
 
 De aquí podemos notar fácilmente la diferencia de la generación de anticuerpos entre ambos grupos, donde notamos que el grupo de medicados tiene una media mayor con respecto a la media del grupo control, además de que la distribución de los anticuerpos en el grupo medicado es mas dispersa que en el grupo control. Lo cual nos da fuertes sospechas positivas sobre la efectividad del medicamento. Ahora veamos un box-plot de la edad.
 
 ```{r}
-ggplot() + geom_boxplot(data = data, aes(x = Trat, y = Edad)) + labs(title = "Boxplot de la edad por grupo", x = "Grupo", y = "Edad")
+ggplot() + geom_boxplot(data = data, aes(x = Trat, y = Edad)) + 
+  labs(title = "Boxplot de la edad por grupo", 
+       x = "Grupo", y = "Edad")
 
 ```
 
 De este box-plot podemos notar que la edad en ambos grupos es muy similar, donde la mediana de ambos grupos es de 38 años, y la dispersión de la edad en ambos grupos es muy similar, lo cual nos da una buena señal de que la edad no afectará en la evaluación del medicamento. Ahora veamos un histograma de la edad.
 
 ```{r}
-ggplot() + geom_histogram(data = data, aes(x = Edad, fill = Trat), bins = 30) + labs(title = "Histograma de la edad por grupo", x = "Edad", y = "Frecuencia")
+ggplot() + geom_histogram(data = data, aes(x = Edad, fill = Trat), bins = 30) + 
+           labs(title = "Histograma de la edad por grupo", 
+                x = "Edad", y = "Frecuencia")
 ```
 
 De este histograma podemos notar que la edad en ambos grupos es muy similar, donde la edad en ambos grupos se concentra en el rango de 30 a 50 años, y la distribución de la edad en ambos grupos es muy similar, lo cual nos da una buena señal de que la edad no afectará en la evaluación del medicamento.
@@ -54,7 +62,7 @@ $$
 $$
 
 ```{r}
-fit <- lm(Ant ~ Edad + Trat + Edad*Trat, data = data)
+fit <- lm(Ant ~ Edad*Trat, data = data)
 summary(fit)
 ```
 
@@ -62,27 +70,44 @@ summary(fit)
 III. De acuerdo con el modelo ajustado, indique las expresiones asociadas a la relación de la generación promedio de anticuerpos con la edad en a) el grupo control y b) en el grupo que recibe el medicamento.
 
 Entonces veamos la expresión para el grupo control:
-$$
-\mathbb{E}(Ant; Edad,Trat = 0) = b_0 + b_1 Edad + b_2 \cdot 0 + b_3Edad \cdot 0 = b_0 + b_1 Edad = 29.3 - 0.3 Edad
-$$
+
+\begin{align*}
+\mathbb{E}(Ant; Edad,Trat = Control = 0) &= b_0 + b_1 Edad + b_2 \cdot 0 + b_3Edad \cdot 0\\
+                               &= b_0 + b_1 Edad\\ 
+                               &= 29.3 - 0.3 Edad
+\end{align*}
+
 Por otro lado para el grupo que recibe el medicamento tenemos que:
-$$
-\mathbb{E}(Ant; Edad,Trat = 1) = b_0 + b_1 Edad + b_2 \cdot 1 + b_3Edad \cdot 1 = 29.3 - 0.3 Edad - 2.3 + 0.2 \cdot Edad = 27 - 0.1 Edad
-$$
+
+\begin{align*}
+\mathbb{E}(Ant; Edad,Trat = Medicado = 1) &= b_0 + b_1 Edad + b_2 \cdot 1 + b_3Edad \cdot 1\\ 
+                               &= (b_0 + b_2) + (b_1 + b_3)Edad\\
+                               &= 27 - 0.1 Edad
+\end{align*}
 
 IV. ¿Se puede decir que la edad afecta de la misma forma la generación de anticuerpos en el grupo control que en el grupo que recibe el medicamento? Realice una prueba de hipótesis apropiada e interprete.
 
-Entonces para realizar esta prueba de hipótesis, podemos comparar las medias obtenidas anteriormente, para comparar si existe un cambio en la generación de anticuerpos con respecto a la edad, así nuestra prueba de hipótesis queda como:
+Entonces para realizar esta prueba de hipótesis, podemos comparar las medias obtenidas anteriormente, para comparar si existe un cambio en la generación de anticuerpos con respecto a la edad, considerando solamente a los parámetros que están asociados a la edad, así nuestra prueba de hipótesis queda como:
 
 $$
-H_0: b_2 + b_3 = 0 \quad vs \quad H_1: b_2 + b_3 \neq 0
+H_0: b_3 = 0 \quad vs \quad H_1: b_3 \neq 0 
 $$
 
 ```{r}
-K=matrix(c(0,0,1,1), ncol=4, nrow=1, byrow=TRUE)
+K=matrix(c(0,0,0,1), ncol=4, nrow=1, byrow=TRUE)
 m=c(0)
-summary(glht(fit, linfct=K, rhs=m),test=Ftest())
+summary(glht(fit, linfct=K, rhs=m))
 ```
+
+Así como rechazamos la hipótesis nula, podemos afirmar que la edad no afecta de la misma forma la generación de anticuerpos en el grupo control que en el grupo que recibe el medicamento. Pasemos a ver la prueba de hipótesis simultánea.
+
+```{r}
+K=matrix(c(0,1,0,0,
+           0,1,0,1), ncol=4, nrow=2, byrow=TRUE)
+m=c(0,0)
+summary(glht(fit, linfct=K, rhs=m))
+```
+Entonces con la prueba hipótesis de prueba simultanea podemos rechazar todavía mas que ambas rectas puedan tener pendiente igual a 0, por lo que no podemos reducir el modelo.
 
 V. Comente sobre el ajuste del modelo incluyendo la interpretación de cada uno de los coeficientes.
 
@@ -93,12 +118,44 @@ Entonces regresando a nuestro modelo podemos ver que con una significancia de 0.
 - $b_0$: Es el intercepto de nuestro modelo, es decir el valor esperado de la generación de anticuerpos cuando la edad es 0 y no se aplica el medicamento, en este caso es de 29.3.
 - $b_1$: Es el coeficiente asociado a la edad, es decir por cada año que aumenta la edad disminuye en 0.3 la generación de anticuerpos.
 - $b_2$: Es el coeficiente asociado a la administración del medicamento, es decir por aplicar el medicamento disminuye en 2.3 la generación de anticuerpos.
-- $b_3$: Es el coeficiente asociado a la interacción entre la edad y la administración del medicamento, es decir por cada año que aumenta la edad y se aplica el medicamento disminuye en 0.1 la generación de anticuerpos.
+- $b_3$: Es el coeficiente asociado a la interacción entre la edad y la administración del medicamento, es decir por cada año que aumenta la edad y se aplica el medicamento aumenta en 0.2 la generación de anticuerpos.
 
 
-VI. Argumente en contra o a favor de la afirmación: "El medicamento funciona aumentando el número de anticuerpos para todos los pacientes entre 25 y 60 años". Se puede apoyar de pruebas de hipótesis o intervalos de confianza simultáneos.
+VI. Argumente en contra o a favor de la afirmación: "El medicamento funciona aumentando el número de anticuerpos para todos los pacientes entre 25 y 60 años". Se puede apoyar de pruebas de hipótesis o intervalos de confianza simultáneos.\\
+Entonces nos apoyaremos de intervalos de confianza simultáneos:
 
 ```{r}
+age <- seq(from = 16, to = 60, by = .5)
 
+#Bajar? la confianza a 90% pues ser?n intervalos simult?neos
+
+#Para una banda para la recta del tratamiento A
+#E(Y;TRT=A, X2)= b0 + b1 age
+KA <- cbind(1, age, 0, 0)
+#Para una banda para la recta del tratamiento B
+#E(Y;TRT=B, X2)=  b0 + b1 age +b2 + b4 age = (b0 + b2) + (b1 + b4) age
+KB <- cbind(1, age, 1, age)
+
+K=rbind(KA, KB)
+
+fitE <- glht(fit, linfct = K)
+fitci <- confint(fitE, level = 0.95)
+
+ggplot() + geom_point(mapping = aes(x = data$Edad, y = data$Ant, color = data$Trat)) + 
+           geom_line(mapping = aes(x = age, y = coef(fitE)[1:89]),color = "#f8766dff") + 
+           geom_line(mapping = aes(x = age, y = fitci$confint[1:89,"upr"]),
+                     color = "#f8766dff") + 
+           geom_line(mapping = aes(x = age, y = fitci$confint[1:89,"lwr"]),
+                     color = "#f8766dff" ) + 
+           geom_line(mapping = aes(x = age, y = coef(fitE)[90:178]), 
+                     color = "#00cbf4") + 
+           geom_line(mapping = aes(x = age, y = fitci$confint[90:178,"upr"]), 
+                     color = "#00cbf4") + 
+           geom_line(mapping = aes(x = age, y = fitci$confint[90:178,"lwr"]), 
+                     color = "#00cbf4") + 
+           labs(title = "Intervalos de confianza simultáneos", 
+                x = "Edad", y = "Generación de anticuerpos") +
+           geom_vline(xintercept = 25, linetype = "dashed") + 
+           geom_vline(xintercept = 60, linetype = "dashed")
 ```
-
+De donde podemos concluir con el intervalo de confianza simultáneo que el medicamento funciona aumentando el número de anticuerpos para todos los pacientes entre 25 y 60 años.
